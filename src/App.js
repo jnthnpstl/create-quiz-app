@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./App.css";
 
 function App() {
   const [items, setItems] = useState([]);
   const [quizNow, setQuizNow] = useState(false);
-  const [count, setCount] = useState(0);
   const [currentItem, setCurrentItem] = useState(0);
+  const [count, setCount] = useState(0);
+  const [score, setScore] = useState(0);
   const [showResult, setShowResult] = useState(false);
   const [score, setScore] = useState(0);
   const [input, setInput] = useState({
@@ -68,6 +69,10 @@ function App() {
   };
 
   const startQuiz = () => {
+    if (!items[0]) {
+      alert("You need to add items");
+      return;
+    }
     setQuizNow(true);
   };
 
@@ -86,110 +91,108 @@ function App() {
       setShowResult(!showResult);
       return;
     }
-    setCurrentItem(currentItem + 1);
-  };
 
-  return quizNow ? (
-    showResult ? (
-      <>
-        <h1>You scored {score}!</h1>
-      </>
+    return quizNow ? (
+      showResult ? (
+        <>
+          <h1>You scored {score}!</h1>
+        </>
+      ) : (
+        <>
+          <div className="question-wrapper">
+            <div className="question-field">
+              <h1>{items[currentItem].question}</h1>
+            </div>
+            <div className="button-choices">
+              {items[currentItem].choices.map((choice) => (
+                <button
+                  onClick={() => nextItem(choice.isCorrect)}
+                  key={Math.floor(Math.random() * 1000)}
+                >
+                  {choice.choice}
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      )
     ) : (
       <>
-        <div className="question-wrapper">
-          <div className="question-field">
-            <h1>{items[currentItem].question}</h1>
-          </div>
-          <div className="button-choices">
-            {items[currentItem].choices.map((choice) => (
-              <button
-                onClick={() => nextItem(choice.isCorrect)}
-                key={Math.floor(Math.random() * 1000)}
-              >
-                {choice.choice}
-              </button>
-            ))}
+        <div className="form-wrapper">
+          <div className="form-area">
+            <form onSubmit={addItem}>
+              <div className="question">
+                <textarea
+                  rows={5}
+                  cols={40}
+                  type="text"
+                  placeholder={"Question"}
+                  value={input.question}
+                  onChange={handleChange}
+                  name="question"
+                />
+              </div>
+
+              <div className="choice">
+                <input type="radio" name="correct" id="choice1" />
+                <label htmlFor="choice1">
+                  <input
+                    type="text"
+                    placeholder="Choices"
+                    value={input.choice1}
+                    onChange={handleChange}
+                    name="choice1"
+                  />
+                </label>
+              </div>
+
+              <div className="choice">
+                <input type="radio" name="correct" id="choice2" />
+                <label htmlFor="choice2">
+                  <input
+                    type="text"
+                    placeholder="Choices"
+                    value={input.choice2}
+                    onChange={handleChange}
+                    name="choice2"
+                  />
+                </label>
+              </div>
+
+              <div className="choice">
+                <input type="radio" name="correct" id="choice3" />
+                <label htmlFor="choice3">
+                  <input
+                    type="text"
+                    placeholder="Choices"
+                    value={input.choice3}
+                    onChange={handleChange}
+                    name="choice3"
+                  />
+                </label>
+              </div>
+              <div className="choice">
+                <input type="radio" name="correct" id="choice4" />
+                <label htmlFor="choice4">
+                  <input
+                    type="text"
+                    placeholder="Choices"
+                    value={input.choice4}
+                    onChange={handleChange}
+                    name="choice4"
+                  />
+                </label>
+              </div>
+              <div className="buttons">
+                <input type={"submit"} value="Add Item"></input>
+                <h1>{count > 1 ? <>{count} items </> : <>{count} item</>} </h1>
+                <button onClick={startQuiz}>Start Quiz</button>
+              </div>
+            </form>
           </div>
         </div>
       </>
-    )
-  ) : (
-    <>
-      <div className="form-wrapper">
-        <div className="form-area">
-          <form onSubmit={addItem}>
-            <div className="question">
-              <textarea
-                rows={5}
-                cols={40}
-                type="text"
-                placeholder={"Question"}
-                value={input.question}
-                onChange={handleChange}
-                name="question"
-              />
-            </div>
-
-            <div className="choice">
-              <input type="radio" name="correct" id="choice1" />
-              <label htmlFor="choice1">
-                <input
-                  type="text"
-                  placeholder="Choices"
-                  value={input.choice1}
-                  onChange={handleChange}
-                  name="choice1"
-                />
-              </label>
-            </div>
-
-            <div className="choice">
-              <input type="radio" name="correct" id="choice2" />
-              <label htmlFor="choice2">
-                <input
-                  type="text"
-                  placeholder="Choices"
-                  value={input.choice2}
-                  onChange={handleChange}
-                  name="choice2"
-                />
-              </label>
-            </div>
-
-            <div className="choice">
-              <input type="radio" name="correct" id="choice3" />
-              <label htmlFor="choice3">
-                <input
-                  type="text"
-                  placeholder="Choices"
-                  value={input.choice3}
-                  onChange={handleChange}
-                  name="choice3"
-                />
-              </label>
-            </div>
-            <div className="choice">
-              <input type="radio" name="correct" id="choice4" />
-              <label htmlFor="choice4">
-                <input
-                  type="text"
-                  placeholder="Choices"
-                  value={input.choice4}
-                  onChange={handleChange}
-                  name="choice4"
-                />
-              </label>
-            </div>
-            <div className="buttons">
-              <input type={"submit"} value="Add Item"></input>
-              <h1>{count > 1 ? <>{count} items </> : <>{count} item</>} </h1>
-              <button onClick={startQuiz}>Start Quiz</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </>
-  );
+    );
+  };
 }
-
 export default App;
